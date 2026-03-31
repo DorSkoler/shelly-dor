@@ -391,6 +391,109 @@ section { padding:2.5rem 0; max-width:100%; }
   border-radius: 100px;
 }
 
+/* ── LOGIN ── */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 2.5rem;
+}
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.login-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.login-header p {
+  font-size: 0.88rem;
+  color: var(--text-2);
+}
+.login-error {
+  font-size: 0.8rem;
+  color: var(--red);
+  background: var(--red-l);
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--r-sm);
+  margin-bottom: 1rem;
+}
+.login-field {
+  margin-bottom: 1rem;
+}
+.login-field label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.login-field input {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.88rem;
+  font-family: var(--sans);
+  border: 1px solid var(--sep-bold);
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,0.5);
+  color: var(--text-1);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.login-field input:focus {
+  border-color: var(--blue);
+}
+.login-btn {
+  width: 100%;
+  padding: 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 0.5rem;
+}
+.login-btn:hover { opacity: 0.9; }
+.login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── NAVBAR AUTH ── */
+.navbar-user {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-3);
+  padding: 0 0.25rem;
+}
+.navbar-signout {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-3);
+  background: none;
+  border: 1px solid var(--sep-bold);
+  border-radius: 100px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: all 0.2s;
+}
+.navbar-signout:hover {
+  color: var(--red);
+  border-color: var(--red);
+  background: var(--red-l);
+}
+
 /* ── LOADING ── */
 .loading {
   display: flex;
