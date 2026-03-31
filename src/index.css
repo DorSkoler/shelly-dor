@@ -722,7 +722,7 @@ section { padding:2.5rem 0; max-width:100%; }
 }
 .modal-desc-input:focus { border-color: var(--blue); }
 
-/* ── DARK MODE INPUTS ── */
+/* ── DARK MODE OVERRIDES ── */
 [data-theme="dark"] .login-field input,
 [data-theme="dark"] .modal-title-input,
 [data-theme="dark"] .modal-field select,
@@ -731,11 +731,35 @@ section { padding:2.5rem 0; max-width:100%; }
   border-color: rgba(255,255,255,0.1);
   color: var(--text-1);
 }
+[data-theme="dark"] .modal-field select option {
+  background: #2c2c2e;
+  color: var(--text-1);
+}
 [data-theme="dark"] .prf {
   background: rgba(255,255,255,0.05);
 }
-[data-theme="dark"] .column-count {
+[data-theme="dark"] .column-count,
+[data-theme="dark"] .modal-close {
   background: rgba(255,255,255,0.06);
+}
+[data-theme="dark"] .task-card {
+  background: rgba(44, 44, 46, 0.8);
+  border-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .modal {
+  background: rgba(44, 44, 46, 0.92);
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .ap.dor { background: rgba(0,122,255,0.2); }
+[data-theme="dark"] .ap.shelly { background: rgba(255,45,85,0.2); }
+[data-theme="dark"] .ap.both { background: rgba(255,149,0,0.2); }
+[data-theme="dark"] .login-card {
+  background: rgba(44, 44, 46, 0.85);
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .modal-cancel {
+  border-color: rgba(255,255,255,0.12);
+  color: var(--text-2);
 }
 
 /* ── THEME TOGGLE ── */

@@ -5,7 +5,8 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  closestCorners,
+  pointerWithin,
+  rectIntersection,
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -15,6 +16,17 @@ import { useDroppable } from '@dnd-kit/core'
 import { supabase } from '../lib/supabase'
 import TaskCard from './TaskCard'
 import TaskModal from './TaskModal'
+
+// Prefer column droppables over task sortables
+function customCollision(args) {
+  const pointerHits = pointerWithin(args)
+  // Filter to only column droppables first
+  const columnIds = new Set(COLUMNS.map((c) => c.id))
+  const columnHits = pointerHits.filter((h) => columnIds.has(h.id))
+  if (columnHits.length > 0) return columnHits
+  // Fall back to rect intersection for edge cases
+  return rectIntersection(args)
+}
 
 const COLUMNS = [
   { id: 'research', label: 'Research' },
@@ -193,7 +205,7 @@ export default function Board() {
       </div>
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={customCollision}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
