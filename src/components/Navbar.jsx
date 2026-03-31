@@ -1,8 +1,10 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../lib/AuthContext'
+import { useTheme } from '../lib/ThemeContext'
 
 export default function Navbar() {
   const { user, signOut } = useAuth()
+  const { dark, toggle } = useTheme()
 
   const displayName = user?.email?.split('@')[0] || ''
 
@@ -16,6 +18,9 @@ export default function Navbar() {
         <NavLink to="/board" className={({ isActive }) => isActive ? 'active' : ''}>
           Board
         </NavLink>
+        <button className="theme-toggle" onClick={toggle} title={dark ? 'Light mode' : 'Dark mode'}>
+          {dark ? '\u2600' : '\u263E'}
+        </button>
         <span className="navbar-user">{displayName}</span>
         <button onClick={signOut} className="navbar-signout">Sign Out</button>
       </div>

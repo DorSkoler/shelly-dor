@@ -16,6 +16,7 @@ const assigneeLabel = {
 
 export default function TaskCard({ task, onClick }) {
   const pointerStart = useRef(null)
+  const wasDragged = useRef(false)
 
   const {
     attributes,
@@ -31,19 +32,30 @@ export default function TaskCard({ task, onClick }) {
     transition,
   }
 
-  function handlePointerDown(e) {
-    pointerStart.current = { x: e.clientX, y: e.clientY }
-    listeners?.onPointerDown?.(e)
+  const combinedListeners = listeners
+    ? {
+        ...listeners,
+        onPointerDown: (e) => {
+          pointerStart.current = { x: e.clientX, y: e.clientY }
+          wasDragged.current = false
+          listeners.onPointerDown(e)
+        },
+      }
+    : {}
+
+  function handleClick() {
+    if (wasDragged.current) return
+    if (!pointerStart.current) return
+    if (onClick) onClick(task)
   }
 
-  function handlePointerUp(e) {
+  function handlePointerMove(e) {
     if (!pointerStart.current) return
     const dx = Math.abs(e.clientX - pointerStart.current.x)
     const dy = Math.abs(e.clientY - pointerStart.current.y)
-    if (dx < 5 && dy < 5 && onClick) {
-      onClick(task)
+    if (dx > 5 || dy > 5) {
+      wasDragged.current = true
     }
-    pointerStart.current = null
   }
 
   return (
@@ -52,9 +64,9 @@ export default function TaskCard({ task, onClick }) {
       style={style}
       className={`task-card${isDragging ? ' dragging' : ''}`}
       {...attributes}
-      {...listeners}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
+      {...combinedListeners}
+      onPointerMove={handlePointerMove}
+      onClick={handleClick}
     >
       <div className="task-card-id">{task.task_id}</div>
       <div className="task-card-title">{task.title}</div>

@@ -33,6 +33,27 @@
   --r-sm: 10px;
 }
 
+[data-theme="dark"] {
+  --bg: #1c1c1e;
+  --glass: rgba(44, 44, 46, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 2px 20px rgba(0,0,0,0.2), 0 0.5px 0 rgba(0,0,0,0.1);
+  --glass-shadow-lg: 0 8px 40px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.15);
+  --text-1: #f5f5f7;
+  --text-2: #a1a1a6;
+  --text-3: #6e6e73;
+  --text-4: #48484a;
+  --sep: rgba(255,255,255,0.06);
+  --sep-bold: rgba(255,255,255,0.12);
+  --blue-l: rgba(0,122,255,0.15);
+  --green-l: rgba(52,199,89,0.15);
+  --orange-l: rgba(255,149,0,0.15);
+  --red-l: rgba(255,59,48,0.15);
+  --purple-l: rgba(175,82,222,0.15);
+  --pink-l: rgba(255,45,85,0.15);
+  --teal-l: rgba(90,200,250,0.15);
+}
+
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
@@ -42,6 +63,9 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+}
+[data-theme="dark"] body {
+  background: linear-gradient(180deg, #111 0%, var(--bg) 30%);
 }
 
 .container { width:90%; max-width:1400px; margin:0 auto; padding:0 2rem; }
@@ -70,6 +94,9 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--sep);
+}
+[data-theme="dark"] .navbar {
+  background: rgba(28,28,30,0.85);
 }
 .navbar-brand {
   font-size: 1.1rem;
@@ -298,6 +325,9 @@ section { padding:2.5rem 0; max-width:100%; }
   border-radius: var(--r);
   padding: 1rem;
   min-height: 400px;
+}
+[data-theme="dark"] .board-column {
+  background: rgba(255,255,255,0.03);
 }
 .board-column.drag-over {
   background: var(--blue-l);
@@ -691,6 +721,42 @@ section { padding:2.5rem 0; max-width:100%; }
   resize: vertical;
 }
 .modal-desc-input:focus { border-color: var(--blue); }
+
+/* ── DARK MODE INPUTS ── */
+[data-theme="dark"] .login-field input,
+[data-theme="dark"] .modal-title-input,
+[data-theme="dark"] .modal-field select,
+[data-theme="dark"] .modal-desc-input {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.1);
+  color: var(--text-1);
+}
+[data-theme="dark"] .prf {
+  background: rgba(255,255,255,0.05);
+}
+[data-theme="dark"] .column-count {
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--sep-bold);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  background: var(--blue-l);
+  border-color: var(--blue);
+}
 
 /* ── LOADING ── */
 .loading {
