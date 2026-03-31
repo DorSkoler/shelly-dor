@@ -17,23 +17,21 @@ import { supabase } from '../lib/supabase'
 import TaskCard from './TaskCard'
 import TaskModal from './TaskModal'
 
-// Prefer column droppables over task sortables
-function customCollision(args) {
-  const pointerHits = pointerWithin(args)
-  // Filter to only column droppables first
-  const columnIds = new Set(COLUMNS.map((c) => c.id))
-  const columnHits = pointerHits.filter((h) => columnIds.has(h.id))
-  if (columnHits.length > 0) return columnHits
-  // Fall back to rect intersection for edge cases
-  return rectIntersection(args)
-}
-
 const COLUMNS = [
   { id: 'research', label: 'Research' },
   { id: 'todo', label: 'To Do' },
   { id: 'in-progress', label: 'In Progress' },
   { id: 'done', label: 'Done' },
 ]
+
+// Prefer column droppables over task sortables
+function customCollision(args) {
+  const pointerHits = pointerWithin(args)
+  const columnIds = new Set(COLUMNS.map((c) => c.id))
+  const columnHits = pointerHits.filter((h) => columnIds.has(h.id))
+  if (columnHits.length > 0) return columnHits
+  return rectIntersection(args)
+}
 
 const DEFAULT_TASKS = [
   { id: '1', task_id: 'SEC-001', title: 'Read MCP Specification & SDK Docs', description: 'Go through modelcontextprotocol.io. Understand server lifecycle, tool definitions, transports, client discovery.', assignee: 'dor', status: 'research' },
@@ -78,17 +76,29 @@ function DroppableColumn({ id, label, tasks, onTaskClick }) {
   )
 }
 
+function getNextTaskId(tasks) {
+  let max = 0
+  for (const t of tasks) {
+    const match = t.task_id?.match(/SEC-(\d+)/)
+    if (match) {
+      const num = parseInt(match[1], 10)
+      if (num > max) max = num
+    }
+  }
+  return `SEC-${String(max + 1).padStart(3, '0')}`
+}
+
 export default function Board() {
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTask, setActiveTask] = useState(null)
   const [modalTask, setModalTask] = useState(null)
+  const [showAddForm, setShowAddForm] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   )
 
-  // Load tasks
   useEffect(() => {
     if (!supabase) {
       setTasks(DEFAULT_TASKS)
@@ -113,7 +123,6 @@ export default function Board() {
 
     fetchTasks()
 
-    // Real-time subscription
     const channel = supabase
       .channel('tasks-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, (payload) => {
@@ -122,7 +131,10 @@ export default function Board() {
             prev.map((t) => (t.id === payload.new.id ? payload.new : t))
           )
         } else if (payload.eventType === 'INSERT') {
-          setTasks((prev) => [...prev, payload.new])
+          setTasks((prev) => {
+            if (prev.find((t) => t.id === payload.new.id)) return prev
+            return [...prev, payload.new]
+          })
         } else if (payload.eventType === 'DELETE') {
           setTasks((prev) => prev.filter((t) => t.id !== payload.old.id))
         }
@@ -149,7 +161,6 @@ export default function Board() {
     if (!over) return
 
     const taskId = active.id
-    // Determine the target column: if dropped on a column, use its id; if dropped on a task, use that task's status
     let newStatus = over.id
     if (!COLUMNS.find((c) => c.id === over.id)) {
       const overTask = tasks.find((t) => t.id === over.id)
@@ -160,12 +171,10 @@ export default function Board() {
     const task = tasks.find((t) => t.id === taskId)
     if (!task || task.status === newStatus) return
 
-    // Optimistic update
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
     )
 
-    // Persist to Supabase
     if (supabase) {
       const { error } = await supabase
         .from('tasks')
@@ -174,7 +183,6 @@ export default function Board() {
 
       if (error) {
         console.error('Error updating task:', error)
-        // Revert on error
         setTasks((prev) =>
           prev.map((t) => (t.id === taskId ? { ...t, status: task.status } : t))
         )
@@ -193,6 +201,52 @@ export default function Board() {
     setModalTask(updatedTask)
   }
 
+  async function handleAddTask(newTask) {
+    const taskId = getNextTaskId(tasks)
+    const position = tasks.length + 1
+    const task = {
+      task_id: taskId,
+      title: newTask.title,
+      description: newTask.description || '',
+      assignee: newTask.assignee,
+      status: newTask.status,
+      position,
+    }
+
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert(task)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error adding task:', error)
+        return
+      }
+      setTasks((prev) => [...prev, data])
+    } else {
+      setTasks((prev) => [...prev, { ...task, id: String(prev.length + 1) }])
+    }
+    setShowAddForm(false)
+  }
+
+  async function handleDeleteTask(taskId) {
+    if (supabase) {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId)
+
+      if (error) {
+        console.error('Error deleting task:', error)
+        return
+      }
+    }
+    setTasks((prev) => prev.filter((t) => t.id !== taskId))
+    setModalTask(null)
+  }
+
   if (loading) {
     return <div className="loading">Loading tasks...</div>
   }
@@ -202,6 +256,11 @@ export default function Board() {
       <div className="board-header">
         <h1>Sprint 0 — Task Board</h1>
         <p>Drag tasks between columns. Changes sync in real-time.{!supabase && ' (Demo mode — connect Supabase for persistence)'}</p>
+      </div>
+      <div className="add-task-row">
+        <button className="add-task-btn" onClick={() => setShowAddForm(true)}>
+          <span>+</span> New Task
+        </button>
       </div>
       <DndContext
         sensors={sensors}
@@ -229,8 +288,84 @@ export default function Board() {
           task={modalTask}
           onClose={() => setModalTask(null)}
           onUpdate={handleModalUpdate}
+          onDelete={handleDeleteTask}
         />
       )}
+      {showAddForm && (
+        <AddTaskModal
+          nextId={getNextTaskId(tasks)}
+          onClose={() => setShowAddForm(false)}
+          onAdd={handleAddTask}
+        />
+      )}
+    </div>
+  )
+}
+
+function AddTaskModal({ nextId, onClose, onAdd }) {
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [assignee, setAssignee] = useState('dor')
+  const [status, setStatus] = useState('todo')
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    if (!title.trim()) return
+    onAdd({ title: title.trim(), description: description.trim(), assignee, status })
+  }
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal glass" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-top-bar">
+          <span className="modal-task-id">{nextId}</span>
+          <button className="modal-close" onClick={onClose}>&#x2715;</button>
+        </div>
+        <h2 className="modal-title" style={{ marginBottom: '1rem' }}>New Task</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-field" style={{ marginBottom: '0.75rem' }}>
+            <label>Title</label>
+            <input
+              className="modal-title-input"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Task title..."
+              autoFocus
+            />
+          </div>
+          <div className="modal-fields">
+            <div className="modal-field">
+              <label>Status</label>
+              <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                <option value="research">Research</option>
+                <option value="todo">To Do</option>
+                <option value="in-progress">In Progress</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+            <div className="modal-field">
+              <label>Assignee</label>
+              <select value={assignee} onChange={(e) => setAssignee(e.target.value)}>
+                <option value="dor">Dor</option>
+                <option value="shelly">Shelly</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+          </div>
+          <label className="modal-desc-label">Description</label>
+          <textarea
+            className="modal-desc-input"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            placeholder="Describe the task..."
+          />
+          <div className="modal-actions">
+            <button type="submit" className="modal-save">Create Task</button>
+            <button type="button" className="modal-cancel" onClick={onClose}>Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

@@ -5,13 +5,14 @@ const assigneeLabel = { dor: 'Dor', shelly: 'Shelly', both: 'Both' }
 const assigneeClass = { dor: 'dor', shelly: 'shelly', both: 'both' }
 const statusLabel = { research: 'Research', todo: 'To Do', 'in-progress': 'In Progress', done: 'Done' }
 
-export default function TaskModal({ task, onClose, onUpdate }) {
+export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false)
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description || '')
   const [status, setStatus] = useState(task.status)
   const [assignee, setAssignee] = useState(task.assignee)
   const [saving, setSaving] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   async function handleSave() {
     setSaving(true)
@@ -49,12 +50,20 @@ export default function TaskModal({ task, onClose, onUpdate }) {
     setEditing(false)
   }
 
+  function handleDelete() {
+    if (!confirmDelete) {
+      setConfirmDelete(true)
+      return
+    }
+    onDelete(task.id)
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal glass" onClick={(e) => e.stopPropagation()}>
         <div className="modal-top-bar">
           <span className="modal-task-id">{task.task_id}</span>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>&#x2715;</button>
         </div>
 
         {editing ? (
@@ -117,12 +126,18 @@ export default function TaskModal({ task, onClose, onUpdate }) {
               <div className="modal-timestamps">
                 Created {new Date(task.created_at).toLocaleDateString()}
                 {task.updated_at && task.updated_at !== task.created_at && (
-                  <> · Updated {new Date(task.updated_at).toLocaleDateString()}</>
+                  <> &middot; Updated {new Date(task.updated_at).toLocaleDateString()}</>
                 )}
               </div>
             )}
             <div className="modal-actions">
               <button className="modal-edit" onClick={() => setEditing(true)}>Edit</button>
+              <button
+                className="modal-delete"
+                onClick={handleDelete}
+              >
+                {confirmDelete ? 'Confirm Delete' : 'Delete'}
+              </button>
             </div>
           </>
         )}

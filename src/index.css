@@ -1,15 +1,15 @@
 :root {
-  --bg: #f2f2f7;
-  --glass: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --glass-shadow: 0 2px 20px rgba(0,0,0,0.04), 0 0.5px 0 rgba(0,0,0,0.04);
-  --glass-shadow-lg: 0 8px 40px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --bg: #e8e5df;
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.45);
+  --glass-shadow: 0 2px 16px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
+  --glass-shadow-lg: 0 8px 32px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
   --text-1: #1c1c1e;
-  --text-2: #636366;
-  --text-3: #aeaeb2;
+  --text-2: #48484a;
+  --text-3: #8e8e93;
   --text-4: #c7c7cc;
-  --sep: rgba(60,60,67,0.08);
-  --sep-bold: rgba(60,60,67,0.15);
+  --sep: rgba(60,60,67,0.1);
+  --sep-bold: rgba(60,60,67,0.18);
   --blue: #007aff;
   --blue-l: rgba(0,122,255,0.08);
   --green: #34c759;
@@ -57,7 +57,7 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-  background: linear-gradient(180deg, #e8e8f0 0%, var(--bg) 30%);
+  background: linear-gradient(135deg, #ddd6cc 0%, #e8e5df 40%, #d8d3cb 100%);
   color: var(--text-1);
   font-family: var(--sans);
   line-height: 1.65;
@@ -65,19 +65,19 @@ body {
   min-height: 100vh;
 }
 [data-theme="dark"] body {
-  background: linear-gradient(180deg, #111 0%, var(--bg) 30%);
+  background: linear-gradient(135deg, #111 0%, var(--bg) 40%, #161616 100%);
 }
 
 .container { width:90%; max-width:1400px; margin:0 auto; padding:0 2rem; }
 
 .glass {
   background: var(--glass);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid var(--glass-border);
   border-radius: var(--r);
   box-shadow: var(--glass-shadow);
-  transition: box-shadow 0.3s;
+  transition: box-shadow 0.3s, transform 0.3s;
 }
 .glass:hover { box-shadow: var(--glass-shadow-lg); }
 
@@ -90,13 +90,13 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(242,242,247,0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(232,229,223,0.7);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-bottom: 1px solid var(--sep);
 }
 [data-theme="dark"] .navbar {
-  background: rgba(28,28,30,0.85);
+  background: rgba(28,28,30,0.8);
 }
 .navbar-brand {
   font-size: 1.1rem;
@@ -321,7 +321,7 @@ section { padding:2.5rem 0; max-width:100%; }
 }
 
 .board-column {
-  background: rgba(0,0,0,0.02);
+  background: rgba(0,0,0,0.04);
   border-radius: var(--r);
   padding: 1rem;
   min-height: 400px;
@@ -368,15 +368,16 @@ section { padding:2.5rem 0; max-width:100%; }
 
 /* ── TASK CARD (KANBAN) ── */
 .task-card {
-  background: var(--glass);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.5);
   border-radius: var(--r-sm);
   padding: 0.85rem;
   cursor: grab;
   transition: box-shadow 0.2s, transform 0.2s;
   user-select: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5);
 }
 .task-card:hover {
   box-shadow: var(--glass-shadow-lg);
@@ -472,12 +473,13 @@ section { padding:2.5rem 0; max-width:100%; }
   padding: 0.6rem 0.85rem;
   font-size: 0.88rem;
   font-family: var(--sans);
-  border: 1px solid var(--sep-bold);
+  border: 1px solid rgba(255,255,255,0.4);
   border-radius: var(--r-sm);
-  background: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.35);
   color: var(--text-1);
   outline: none;
   transition: border-color 0.2s;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
 }
 .login-field input:focus {
   border-color: var(--blue);
@@ -760,6 +762,49 @@ section { padding:2.5rem 0; max-width:100%; }
 [data-theme="dark"] .modal-cancel {
   border-color: rgba(255,255,255,0.12);
   color: var(--text-2);
+}
+
+/* ── ADD TASK BUTTON ── */
+.add-task-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.25rem;
+}
+.add-task-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  border-radius: 100px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.add-task-btn:hover { opacity: 0.9; }
+.add-task-btn span { font-size: 1rem; line-height: 1; }
+
+/* ── DELETE BUTTON IN MODAL ── */
+.modal-delete {
+  padding: 0.5rem 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  color: var(--red);
+  background: var(--red-l);
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+.modal-delete:hover {
+  background: var(--red);
+  color: #fff;
 }
 
 /* ── THEME TOGGLE ── */
