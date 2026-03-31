@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
@@ -13,7 +14,9 @@ const assigneeLabel = {
   both: 'Both',
 }
 
-export default function TaskCard({ task }) {
+export default function TaskCard({ task, onClick }) {
+  const pointerStart = useRef(null)
+
   const {
     attributes,
     listeners,
@@ -28,6 +31,21 @@ export default function TaskCard({ task }) {
     transition,
   }
 
+  function handlePointerDown(e) {
+    pointerStart.current = { x: e.clientX, y: e.clientY }
+    listeners?.onPointerDown?.(e)
+  }
+
+  function handlePointerUp(e) {
+    if (!pointerStart.current) return
+    const dx = Math.abs(e.clientX - pointerStart.current.x)
+    const dy = Math.abs(e.clientY - pointerStart.current.y)
+    if (dx < 5 && dy < 5 && onClick) {
+      onClick(task)
+    }
+    pointerStart.current = null
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -35,6 +53,8 @@ export default function TaskCard({ task }) {
       className={`task-card${isDragging ? ' dragging' : ''}`}
       {...attributes}
       {...listeners}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
     >
       <div className="task-card-id">{task.task_id}</div>
       <div className="task-card-title">{task.title}</div>

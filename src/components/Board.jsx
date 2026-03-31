@@ -14,6 +14,7 @@ import {
 import { useDroppable } from '@dnd-kit/core'
 import { supabase } from '../lib/supabase'
 import TaskCard from './TaskCard'
+import TaskModal from './TaskModal'
 
 const COLUMNS = [
   { id: 'research', label: 'Research' },
@@ -39,7 +40,7 @@ const DEFAULT_TASKS = [
   { id: '14', task_id: 'SEC-014', title: 'Ethical & Legal Guidelines', description: 'Write USAGE.md with disclaimers. Consider --confirm flag or target allowlist.', assignee: 'both', status: 'todo' },
 ]
 
-function DroppableColumn({ id, label, tasks }) {
+function DroppableColumn({ id, label, tasks, onTaskClick }) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
@@ -57,7 +58,7 @@ function DroppableColumn({ id, label, tasks }) {
       >
         <div className="task-list">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={task.id} task={task} onClick={onTaskClick} />
           ))}
         </div>
       </SortableContext>
@@ -69,6 +70,7 @@ export default function Board() {
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTask, setActiveTask] = useState(null)
+  const [modalTask, setModalTask] = useState(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -168,6 +170,17 @@ export default function Board() {
     }
   }
 
+  function handleTaskClick(task) {
+    setModalTask(task)
+  }
+
+  function handleModalUpdate(updatedTask) {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+    )
+    setModalTask(updatedTask)
+  }
+
   if (loading) {
     return <div className="loading">Loading tasks...</div>
   }
@@ -191,6 +204,7 @@ export default function Board() {
               id={col.id}
               label={col.label}
               tasks={getColumnTasks(col.id)}
+              onTaskClick={handleTaskClick}
             />
           ))}
         </div>
@@ -198,6 +212,13 @@ export default function Board() {
           {activeTask ? <TaskCard task={activeTask} /> : null}
         </DragOverlay>
       </DndContext>
+      {modalTask && (
+        <TaskModal
+          task={modalTask}
+          onClose={() => setModalTask(null)}
+          onUpdate={handleModalUpdate}
+        />
+      )}
     </div>
   )
 }
