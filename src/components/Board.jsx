@@ -50,7 +50,7 @@ const DEFAULT_TASKS = [
   { id: '14', task_id: 'SEC-014', title: 'Ethical & Legal Guidelines', description: 'Write USAGE.md with disclaimers. Consider --confirm flag or target allowlist.', assignee: 'both', status: 'todo' },
 ]
 
-function DroppableColumn({ id, label, tasks, onTaskClick }) {
+function DroppableColumn({ id, label, tasks, onTaskClick, allTasks }) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
@@ -68,7 +68,7 @@ function DroppableColumn({ id, label, tasks, onTaskClick }) {
       >
         <div className="task-list">
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} onClick={onTaskClick} />
+            <TaskCard key={task.id} task={task} onClick={onTaskClick} allTasks={allTasks} />
           ))}
         </div>
       </SortableContext>
@@ -288,6 +288,7 @@ export default function Board() {
               label={col.label}
               tasks={getColumnTasks(col.id)}
               onTaskClick={handleTaskClick}
+              allTasks={tasks}
             />
           ))}
         </div>
@@ -301,6 +302,7 @@ export default function Board() {
           onClose={() => setModalTask(null)}
           onUpdate={handleModalUpdate}
           onDelete={handleDeleteTask}
+          allTasks={tasks}
         />
       )}
       {showAddForm && (

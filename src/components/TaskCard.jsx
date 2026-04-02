@@ -14,7 +14,7 @@ const assigneeLabel = {
   both: 'Both',
 }
 
-export default function TaskCard({ task, onClick }) {
+export default function TaskCard({ task, onClick, allTasks }) {
   const pointerStart = useRef(null)
   const wasDragged = useRef(false)
 
@@ -58,11 +58,17 @@ export default function TaskCard({ task, onClick }) {
     }
   }
 
+  const blockers = (task.blocked_by || [])
+    .map((tid) => allTasks?.find((t) => t.task_id === tid))
+    .filter(Boolean)
+
+  const unresolvedBlockers = blockers.filter((b) => b.status !== 'done')
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`task-card task-card--${task.assignee || 'both'}${isDragging ? ' dragging' : ''}`}
+      className={`task-card task-card--${task.assignee || 'both'}${isDragging ? ' dragging' : ''}${unresolvedBlockers.length > 0 ? ' task-card--blocked' : ''}`}
       {...attributes}
       {...combinedListeners}
       onPointerMove={handlePointerMove}
@@ -77,6 +83,11 @@ export default function TaskCard({ task, onClick }) {
         <span className={`ap ${assigneeClass[task.assignee] || ''}`}>
           {assigneeLabel[task.assignee] || task.assignee}
         </span>
+        {unresolvedBlockers.length > 0 && (
+          <span className="blocker-badge" title={unresolvedBlockers.map((b) => b.task_id).join(', ')}>
+            Blocked by {unresolvedBlockers.map((b) => b.task_id).join(', ')}
+          </span>
+        )}
       </div>
     </div>
   )

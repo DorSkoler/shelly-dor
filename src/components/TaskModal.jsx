@@ -5,17 +5,20 @@ const assigneeLabel = { dor: 'Dor', shelly: 'Shelly', both: 'Both' }
 const assigneeClass = { dor: 'dor', shelly: 'shelly', both: 'both' }
 const statusLabel = { research: 'Research', todo: 'To Do', 'in-progress': 'In Progress', done: 'Done' }
 
-export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
+export default function TaskModal({ task, onClose, onUpdate, onDelete, allTasks = [] }) {
   const [editing, setEditing] = useState(false)
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description || '')
   const [status, setStatus] = useState(task.status)
   const [assignee, setAssignee] = useState(task.assignee)
   const [links, setLinks] = useState(task.links || [])
+  const [blockedBy, setBlockedBy] = useState(task.blocked_by || [])
   const [newLinkUrl, setNewLinkUrl] = useState('')
   const [newLinkLabel, setNewLinkLabel] = useState('')
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+
+  const otherTasks = allTasks.filter((t) => t.task_id !== task.task_id)
 
   async function handleSave() {
     setSaving(true)
@@ -25,6 +28,7 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
       status,
       assignee,
       links,
+      blocked_by: blockedBy,
       updated_at: new Date().toISOString(),
     }
 
@@ -52,6 +56,7 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
     setStatus(task.status)
     setAssignee(task.assignee)
     setLinks(task.links || [])
+    setBlockedBy(task.blocked_by || [])
     setEditing(false)
   }
 
@@ -68,6 +73,12 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
     setLinks((prev) => prev.filter((_, i) => i !== index))
   }
 
+  function toggleBlocker(taskId) {
+    setBlockedBy((prev) =>
+      prev.includes(taskId) ? prev.filter((id) => id !== taskId) : [...prev, taskId]
+    )
+  }
+
   function handleDelete() {
     if (!confirmDelete) {
       setConfirmDelete(true)
@@ -75,6 +86,10 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
     }
     onDelete(task.id)
   }
+
+  const blockers = (task.blocked_by || [])
+    .map((tid) => allTasks.find((t) => t.task_id === tid))
+    .filter(Boolean)
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -118,6 +133,23 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
               rows={6}
               placeholder="Add a description..."
             />
+
+            <div className="modal-links-section">
+              <label className="modal-desc-label">Blocked By</label>
+              <div className="blocker-picker">
+                {otherTasks.map((t) => (
+                  <button
+                    key={t.task_id}
+                    type="button"
+                    className={`blocker-chip${blockedBy.includes(t.task_id) ? ' selected' : ''}${t.status === 'done' ? ' done' : ''}`}
+                    onClick={() => toggleBlocker(t.task_id)}
+                  >
+                    <span className="blocker-chip-id">{t.task_id}</span>
+                    <span className="blocker-chip-title">{t.title}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="modal-links-section">
               <label className="modal-desc-label">Links</label>
@@ -170,6 +202,22 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
                 {task.description || 'No description yet.'}
               </p>
             </div>
+
+            {blockers.length > 0 && (
+              <div className="modal-section">
+                <h4>Blocked By</h4>
+                <div className="blocker-list">
+                  {blockers.map((b) => (
+                    <div key={b.task_id} className={`blocker-item${b.status === 'done' ? ' resolved' : ''}`}>
+                      <span className={`blocker-dot${b.status === 'done' ? ' done' : ''}`}></span>
+                      <span className="blocker-id">{b.task_id}</span>
+                      <span className="blocker-title">{b.title}</span>
+                      {b.status === 'done' && <span className="blocker-done-tag">Done</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {links.length > 0 && (
               <div className="modal-section">
