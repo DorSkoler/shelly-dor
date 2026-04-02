@@ -144,7 +144,7 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
                   placeholder="Label (optional)"
                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddLink())}
                 />
-                <button className="link-add-btn" onClick={handleAddLink}>+</button>
+                <button className="link-add-btn" onClick={handleAddLink}>Add</button>
               </div>
             </div>
 
