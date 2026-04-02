@@ -379,6 +379,40 @@ section { padding:2.5rem 0; max-width:100%; }
   user-select: none;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5);
 }
+/* Card assignee colors — light mode */
+.task-card--dor {
+  background: rgba(0,122,255,0.06);
+  border-color: rgba(0,122,255,0.15);
+  border-left: 3px solid var(--blue);
+}
+.task-card--shelly {
+  background: rgba(255,45,85,0.06);
+  border-color: rgba(255,45,85,0.15);
+  border-left: 3px solid var(--pink);
+}
+.task-card--both {
+  background: linear-gradient(135deg, rgba(0,122,255,0.06) 0%, rgba(255,45,85,0.06) 100%);
+  border-color: rgba(175,82,222,0.15);
+  border-left: 3px solid transparent;
+  border-image: linear-gradient(to bottom, var(--blue), var(--pink)) 1;
+  border-image-slice: 0 0 0 1;
+  border-left-width: 3px;
+  border-left-style: solid;
+}
+/* Card assignee colors — dark mode */
+[data-theme="dark"] .task-card--dor {
+  background: rgba(0,122,255,0.1);
+  border-color: rgba(0,122,255,0.2);
+}
+[data-theme="dark"] .task-card--shelly {
+  background: rgba(255,45,85,0.1);
+  border-color: rgba(255,45,85,0.2);
+}
+[data-theme="dark"] .task-card--both {
+  background: linear-gradient(135deg, rgba(0,122,255,0.1) 0%, rgba(255,45,85,0.1) 100%);
+  border-color: rgba(175,82,222,0.2);
+}
+
 .task-card:hover {
   box-shadow: var(--glass-shadow-lg);
   transform: translateY(-1px);
@@ -764,12 +798,50 @@ section { padding:2.5rem 0; max-width:100%; }
   color: var(--text-2);
 }
 
-/* ── ADD TASK BUTTON ── */
-.add-task-row {
+/* ── BOARD TOOLBAR ── */
+.board-toolbar {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 1.25rem;
 }
+.filter-group {
+  display: flex;
+  gap: 0.3rem;
+  background: rgba(0,0,0,0.04);
+  border-radius: 100px;
+  padding: 0.2rem;
+}
+[data-theme="dark"] .filter-group {
+  background: rgba(255,255,255,0.06);
+}
+.filter-btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  color: var(--text-3);
+  background: none;
+  border: none;
+  border-radius: 100px;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover { color: var(--text-2); }
+.filter-btn.active {
+  background: #fff;
+  color: var(--text-1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .filter-btn.active {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.filter-btn.filter-dor.active { color: var(--blue); }
+.filter-btn.filter-shelly.active { color: var(--pink); }
+
+/* ── ADD TASK BUTTON ── */
 .add-task-btn {
   display: flex;
   align-items: center;
@@ -880,8 +952,9 @@ section { padding:2.5rem 0; max-width:100%; }
   .login-card{padding:1.75rem}
   .login-header h1{font-size:1.5rem}
 
-  /* Add task */
-  .add-task-row{margin-bottom:0.75rem}
+  /* Toolbar */
+  .board-toolbar{flex-wrap:wrap;gap:0.5rem}
+  .filter-btn{font-size:0.7rem;padding:0.3rem 0.65rem}
   .add-task-btn{font-size:0.78rem;padding:0.45rem 0.9rem}
 
   /* Cards */

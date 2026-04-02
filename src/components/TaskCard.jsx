@@ -62,7 +62,7 @@ export default function TaskCard({ task, onClick }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`task-card${isDragging ? ' dragging' : ''}`}
+      className={`task-card task-card--${task.assignee || 'both'}${isDragging ? ' dragging' : ''}`}
       {...attributes}
       {...combinedListeners}
       onPointerMove={handlePointerMove}

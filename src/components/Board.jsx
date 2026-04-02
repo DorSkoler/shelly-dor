@@ -94,6 +94,7 @@ export default function Board() {
   const [activeTask, setActiveTask] = useState(null)
   const [modalTask, setModalTask] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [filter, setFilter] = useState('all')
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -147,7 +148,13 @@ export default function Board() {
   }, [])
 
   function getColumnTasks(columnId) {
-    return tasks.filter((t) => t.status === columnId)
+    return tasks.filter((t) => {
+      if (t.status !== columnId) return false
+      if (filter === 'all') return true
+      if (filter === 'dor') return t.assignee === 'dor' || t.assignee === 'both'
+      if (filter === 'shelly') return t.assignee === 'shelly' || t.assignee === 'both'
+      return true
+    })
   }
 
   function handleDragStart(event) {
@@ -257,7 +264,12 @@ export default function Board() {
         <h1>Sprint 0 — Task Board</h1>
         <p>Drag tasks between columns. Changes sync in real-time.{!supabase && ' (Demo mode — connect Supabase for persistence)'}</p>
       </div>
-      <div className="add-task-row">
+      <div className="board-toolbar">
+        <div className="filter-group">
+          <button className={`filter-btn${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>All</button>
+          <button className={`filter-btn filter-dor${filter === 'dor' ? ' active' : ''}`} onClick={() => setFilter('dor')}>Dor</button>
+          <button className={`filter-btn filter-shelly${filter === 'shelly' ? ' active' : ''}`} onClick={() => setFilter('shelly')}>Shelly</button>
+        </div>
         <button className="add-task-btn" onClick={() => setShowAddForm(true)}>
           <span>+</span> New Task
         </button>
