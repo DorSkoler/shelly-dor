@@ -757,6 +757,94 @@ section { padding:2.5rem 0; max-width:100%; }
 }
 .modal-desc-input:focus { border-color: var(--blue); }
 
+/* ── TASK LINKS ── */
+.modal-links-section { margin-top: 1rem; }
+.link-list { display: flex; flex-direction: column; gap: 0.35rem; }
+.link-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--r-sm);
+  background: rgba(0,0,0,0.03);
+  text-decoration: none;
+  color: var(--text-1);
+  transition: background 0.2s;
+}
+.link-item:hover { background: var(--blue-l); }
+[data-theme="dark"] .link-item { background: rgba(255,255,255,0.04); }
+[data-theme="dark"] .link-item:hover { background: var(--blue-l); }
+.link-icon { font-size: 0.9rem; flex-shrink: 0; }
+.link-label { font-size: 0.82rem; font-weight: 500; flex: 1; }
+.link-arrow { font-size: 0.7rem; color: var(--text-3); }
+
+/* Link edit rows */
+.link-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--r-sm);
+  background: rgba(0,0,0,0.03);
+  margin-bottom: 0.3rem;
+}
+[data-theme="dark"] .link-edit-row { background: rgba(255,255,255,0.04); }
+.link-edit-label { font-size: 0.8rem; font-weight: 500; }
+.link-edit-url {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.link-remove {
+  width: 20px; height: 20px;
+  border: none; background: none;
+  color: var(--text-3); cursor: pointer;
+  font-size: 0.7rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.link-remove:hover { background: var(--red-l); color: var(--red); }
+
+.link-add-row {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+.link-input {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  font-family: var(--sans);
+  border: 1px solid var(--sep-bold);
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,0.35);
+  color: var(--text-1);
+  outline: none;
+}
+.link-input:focus { border-color: var(--blue); }
+.link-input-label { flex: 0.6; }
+[data-theme="dark"] .link-input {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.1);
+  color: var(--text-1);
+}
+.link-add-btn {
+  width: 32px; height: 32px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  border-radius: var(--r-sm);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.link-add-btn:hover { opacity: 0.9; }
+
 /* ── DARK MODE OVERRIDES ── */
 [data-theme="dark"] .login-field input,
 [data-theme="dark"] .modal-title-input,

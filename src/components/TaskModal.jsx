@@ -11,6 +11,9 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
   const [description, setDescription] = useState(task.description || '')
   const [status, setStatus] = useState(task.status)
   const [assignee, setAssignee] = useState(task.assignee)
+  const [links, setLinks] = useState(task.links || [])
+  const [newLinkUrl, setNewLinkUrl] = useState('')
+  const [newLinkLabel, setNewLinkLabel] = useState('')
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
@@ -21,6 +24,7 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
       description,
       status,
       assignee,
+      links,
       updated_at: new Date().toISOString(),
     }
 
@@ -47,7 +51,21 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
     setDescription(task.description || '')
     setStatus(task.status)
     setAssignee(task.assignee)
+    setLinks(task.links || [])
     setEditing(false)
+  }
+
+  function handleAddLink() {
+    const url = newLinkUrl.trim()
+    if (!url) return
+    const label = newLinkLabel.trim() || guessLabel(url)
+    setLinks((prev) => [...prev, { url, label }])
+    setNewLinkUrl('')
+    setNewLinkLabel('')
+  }
+
+  function handleRemoveLink(index) {
+    setLinks((prev) => prev.filter((_, i) => i !== index))
   }
 
   function handleDelete() {
@@ -100,6 +118,36 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
               rows={6}
               placeholder="Add a description..."
             />
+
+            <div className="modal-links-section">
+              <label className="modal-desc-label">Links</label>
+              {links.map((link, i) => (
+                <div key={i} className="link-edit-row">
+                  <span className="link-icon">{getLinkIcon(link.url)}</span>
+                  <span className="link-edit-label">{link.label}</span>
+                  <span className="link-edit-url">{link.url}</span>
+                  <button className="link-remove" onClick={() => handleRemoveLink(i)}>&#x2715;</button>
+                </div>
+              ))}
+              <div className="link-add-row">
+                <input
+                  className="link-input"
+                  value={newLinkUrl}
+                  onChange={(e) => setNewLinkUrl(e.target.value)}
+                  placeholder="https://..."
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddLink())}
+                />
+                <input
+                  className="link-input link-input-label"
+                  value={newLinkLabel}
+                  onChange={(e) => setNewLinkLabel(e.target.value)}
+                  placeholder="Label (optional)"
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddLink())}
+                />
+                <button className="link-add-btn" onClick={handleAddLink}>+</button>
+              </div>
+            </div>
+
             <div className="modal-actions">
               <button className="modal-save" onClick={handleSave} disabled={saving}>
                 {saving ? 'Saving...' : 'Save'}
@@ -122,6 +170,22 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
                 {task.description || 'No description yet.'}
               </p>
             </div>
+
+            {links.length > 0 && (
+              <div className="modal-section">
+                <h4>Links</h4>
+                <div className="link-list">
+                  {links.map((link, i) => (
+                    <a key={i} className="link-item" href={link.url} target="_blank" rel="noopener noreferrer">
+                      <span className="link-icon">{getLinkIcon(link.url)}</span>
+                      <span className="link-label">{link.label}</span>
+                      <span className="link-arrow">&#x2197;</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {task.created_at && (
               <div className="modal-timestamps">
                 Created {new Date(task.created_at).toLocaleDateString()}
@@ -144,4 +208,30 @@ export default function TaskModal({ task, onClose, onUpdate, onDelete }) {
       </div>
     </div>
   )
+}
+
+function getLinkIcon(url) {
+  if (url.includes('github.com')) return '\uD83D\uDCBB'
+  if (url.includes('docs.google.com')) return '\uD83D\uDCC4'
+  if (url.includes('figma.com')) return '\uD83C\uDFA8'
+  if (url.includes('notion.so') || url.includes('notion.site')) return '\uD83D\uDCD3'
+  if (url.includes('drive.google.com')) return '\uD83D\uDCC1'
+  return '\uD83D\uDD17'
+}
+
+function guessLabel(url) {
+  try {
+    const u = new URL(url)
+    if (u.hostname.includes('github.com')) {
+      const parts = u.pathname.split('/').filter(Boolean)
+      return parts.length >= 2 ? `${parts[0]}/${parts[1]}` : 'GitHub'
+    }
+    if (u.hostname.includes('docs.google.com')) return 'Google Doc'
+    if (u.hostname.includes('drive.google.com')) return 'Google Drive'
+    if (u.hostname.includes('figma.com')) return 'Figma'
+    if (u.hostname.includes('notion')) return 'Notion'
+    return u.hostname.replace('www.', '')
+  } catch {
+    return url
+  }
 }
