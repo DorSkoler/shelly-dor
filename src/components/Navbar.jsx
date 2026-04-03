@@ -18,6 +18,9 @@ export default function Navbar() {
         <NavLink to="/board" className={({ isActive }) => isActive ? 'active' : ''}>
           Board
         </NavLink>
+        <NavLink to="/resources" className={({ isActive }) => isActive ? 'active' : ''}>
+          Resources
+        </NavLink>
         <button className="theme-toggle" onClick={toggle} title={dark ? 'Light mode' : 'Dark mode'}>
           {dark ? '\u2600' : '\u263E'}
         </button>

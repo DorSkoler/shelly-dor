@@ -3,6 +3,7 @@ import { useAuth } from './lib/AuthContext'
 import Navbar from './components/Navbar'
 import Docs from './components/Docs'
 import Board from './components/Board'
+import Resources from './components/Resources'
 import Login from './components/Login'
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Docs />} />
           <Route path="/board" element={<Board />} />
+          <Route path="/resources" element={<Resources />} />
         </Routes>
       </div>
     </>

@@ -1112,6 +1112,103 @@ section { padding:2.5rem 0; max-width:100%; }
   font-size: 0.9rem;
 }
 
+/* ── RESOURCES ── */
+.resources-page { padding: 2rem 0; }
+.resources-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-3);
+  font-size: 0.9rem;
+}
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+.resource-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: var(--text-1);
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.resource-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-lg);
+}
+.resource-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.resource-card-body { flex: 1; min-width: 0; }
+.resource-card-service {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.2rem;
+}
+.resource-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.resource-card-desc {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.resource-card-delete {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  color: var(--text-4);
+  cursor: pointer;
+  font-size: 0.65rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s;
+}
+.resource-card:hover .resource-card-delete { opacity: 1; }
+.resource-card-delete:hover {
+  background: var(--red-l);
+  color: var(--red);
+}
+
+/* Resource preview in add modal */
+.resource-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  margin-bottom: 1rem;
+}
+
 /* ── RESPONSIVE: TABLET ── */
 @media(max-width:1024px){
   .board{grid-template-columns:repeat(2, 1fr)}
@@ -1159,6 +1256,9 @@ section { padding:2.5rem 0; max-width:100%; }
   .board-toolbar{flex-wrap:wrap;gap:0.5rem}
   .filter-btn{font-size:0.7rem;padding:0.3rem 0.65rem}
   .add-task-btn{font-size:0.78rem;padding:0.45rem 0.9rem}
+
+  /* Resources */
+  .resources-grid{grid-template-columns:1fr}
 
   /* Cards */
   .task-card{padding:0.7rem}
