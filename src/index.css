@@ -1225,9 +1225,54 @@ section { padding:2.5rem 0; max-width:100%; }
   outline: none;
   width: 100%;
 }
-[data-theme="dark"] .resource-edit-input {
+[data-theme="dark"] .resource-edit-input,
+[data-theme="dark"] .resource-edit-desc {
   background: rgba(255,255,255,0.06);
 }
+.resource-edit-desc {
+  font-size: 0.8rem;
+  font-family: var(--sans);
+  border: 1px solid var(--sep-bold);
+  border-radius: 6px;
+  padding: 0.3rem 0.4rem;
+  background: rgba(255,255,255,0.5);
+  color: var(--text-1);
+  outline: none;
+  width: 100%;
+  resize: vertical;
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+.resource-edit-desc:focus { border-color: var(--blue); }
+.resource-edit-actions {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+}
+.resource-edit-save {
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+}
+.resource-edit-save:hover { opacity: 0.9; }
+.resource-edit-cancel {
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: var(--sans);
+  color: var(--text-3);
+  background: none;
+  border: 1px solid var(--sep-bold);
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+}
+.resource-edit-cancel:hover { border-color: var(--text-3); }
 .resource-card-icon svg {
   width: 24px;
   height: 24px;

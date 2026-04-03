@@ -153,6 +153,7 @@ export default function Resources() {
   const [filter, setFilter] = useState('all')
   const [editingId, setEditingId] = useState(null)
   const [editTitle, setEditTitle] = useState('')
+  const [editDesc, setEditDesc] = useState('')
 
   useEffect(() => {
     if (!supabase) {
@@ -239,18 +240,20 @@ export default function Resources() {
     e.stopPropagation()
     setEditingId(r.id)
     setEditTitle(r.title)
+    setEditDesc(r.description || '')
   }
 
   async function saveEdit(id) {
-    const trimmed = editTitle.trim()
-    if (!trimmed) {
+    const trimmedTitle = editTitle.trim()
+    if (!trimmedTitle) {
       setEditingId(null)
       return
     }
+    const trimmedDesc = editDesc.trim() || null
     if (supabase) {
       const { error } = await supabase
         .from('resources')
-        .update({ title: trimmed })
+        .update({ title: trimmedTitle, description: trimmedDesc })
         .eq('id', id)
       if (error) {
         console.error('Error updating resource:', error)
@@ -258,7 +261,7 @@ export default function Resources() {
         return
       }
     }
-    setResources((prev) => prev.map((r) => r.id === id ? { ...r, title: trimmed } : r))
+    setResources((prev) => prev.map((r) => r.id === id ? { ...r, title: trimmedTitle, description: trimmedDesc } : r))
     setEditingId(null)
   }
 
@@ -310,22 +313,40 @@ export default function Resources() {
                 <div className="resource-card-body">
                   <div className="resource-card-service">{info.service}</div>
                   {editingId === r.id ? (
-                    <input
-                      className="resource-edit-input"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') saveEdit(r.id)
-                        if (e.key === 'Escape') setEditingId(null)
-                      }}
-                      onBlur={() => saveEdit(r.id)}
-                      autoFocus
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                    <>
+                      <input
+                        className="resource-edit-input"
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') setEditingId(null)
+                        }}
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                        placeholder="Title"
+                      />
+                      <textarea
+                        className="resource-edit-desc"
+                        value={editDesc}
+                        onChange={(e) => setEditDesc(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') setEditingId(null)
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        placeholder="Description (optional)"
+                        rows={2}
+                      />
+                      <div className="resource-edit-actions" onClick={(e) => e.stopPropagation()}>
+                        <button className="resource-edit-save" onClick={() => saveEdit(r.id)}>Save</button>
+                        <button className="resource-edit-cancel" onClick={() => setEditingId(null)}>Cancel</button>
+                      </div>
+                    </>
                   ) : (
-                    <div className="resource-card-title">{r.title}</div>
+                    <>
+                      <div className="resource-card-title">{r.title}</div>
+                      {r.description && <div className="resource-card-desc">{r.description}</div>}
+                    </>
                   )}
-                  {r.description && <div className="resource-card-desc">{r.description}</div>}
                 </div>
                 <div className="resource-card-actions">
                   {editingId !== r.id && (
