@@ -1176,28 +1176,61 @@ section { padding:2.5rem 0; max-width:100%; }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.resource-card-delete {
+.resource-card-actions {
   position: absolute;
   top: 0.6rem;
   right: 0.6rem;
-  width: 22px;
-  height: 22px;
+  display: flex;
+  gap: 0.2rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.resource-card:hover .resource-card-actions { opacity: 1; }
+.resource-card-edit,
+.resource-card-delete {
+  width: 24px;
+  height: 24px;
   border: none;
-  background: none;
-  color: var(--text-4);
+  background: rgba(0,0,0,0.05);
+  color: var(--text-3);
   cursor: pointer;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
   transition: all 0.2s;
 }
-.resource-card:hover .resource-card-delete { opacity: 1; }
+[data-theme="dark"] .resource-card-edit,
+[data-theme="dark"] .resource-card-delete {
+  background: rgba(255,255,255,0.08);
+}
+.resource-card-edit:hover {
+  background: var(--blue-l);
+  color: var(--blue);
+}
 .resource-card-delete:hover {
   background: var(--red-l);
   color: var(--red);
+}
+.resource-edit-input {
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--sans);
+  border: 1px solid var(--blue);
+  border-radius: 6px;
+  padding: 0.2rem 0.4rem;
+  background: rgba(255,255,255,0.5);
+  color: var(--text-1);
+  outline: none;
+  width: 100%;
+}
+[data-theme="dark"] .resource-edit-input {
+  background: rgba(255,255,255,0.06);
+}
+.resource-card-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* Resource preview in add modal */
