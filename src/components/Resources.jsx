@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { getCached, setCache } from '../lib/cache'
 
 const CATEGORIES = [
   { id: 'all', label: 'All' },
@@ -64,7 +65,13 @@ export default function Resources() {
       return
     }
 
-    async function fetch() {
+    const cached = getCached('resources')
+    if (cached && cached.length > 0) {
+      setResources(cached)
+      setLoading(false)
+    }
+
+    async function fetchResources() {
       const { data, error } = await supabase
         .from('resources')
         .select('*')
@@ -74,11 +81,12 @@ export default function Resources() {
         console.error('Error fetching resources:', error)
       } else {
         setResources(data || [])
+        setCache('resources', data || [])
       }
       setLoading(false)
     }
 
-    fetch()
+    fetchResources()
 
     const channel = supabase
       .channel('resources-changes')
@@ -98,6 +106,13 @@ export default function Resources() {
 
     return () => supabase.removeChannel(channel)
   }, [])
+
+  // Keep cache in sync
+  useEffect(() => {
+    if (resources.length > 0) {
+      setCache('resources', resources)
+    }
+  }, [resources])
 
   async function handleAdd(resource) {
     if (!supabase) return

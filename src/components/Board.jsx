@@ -14,6 +14,7 @@ import {
 } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import { supabase } from '../lib/supabase'
+import { getCached, setCache } from '../lib/cache'
 import TaskCard from './TaskCard'
 import TaskModal from './TaskModal'
 
@@ -107,6 +108,13 @@ export default function Board() {
       return
     }
 
+    // Load from cache instantly, then refresh in background
+    const cached = getCached('tasks')
+    if (cached && cached.length > 0) {
+      setTasks(cached)
+      setLoading(false)
+    }
+
     async function fetchTasks() {
       const { data, error } = await supabase
         .from('tasks')
@@ -115,9 +123,11 @@ export default function Board() {
 
       if (error) {
         console.error('Error fetching tasks:', error)
-        setTasks(DEFAULT_TASKS)
+        if (!cached) setTasks(DEFAULT_TASKS)
       } else {
-        setTasks(data.length > 0 ? data : DEFAULT_TASKS)
+        const result = data.length > 0 ? data : DEFAULT_TASKS
+        setTasks(result)
+        setCache('tasks', result)
       }
       setLoading(false)
     }
@@ -146,6 +156,13 @@ export default function Board() {
       supabase.removeChannel(channel)
     }
   }, [])
+
+  // Keep cache in sync
+  useEffect(() => {
+    if (tasks.length > 0 && tasks[0].id !== '1') {
+      setCache('tasks', tasks)
+    }
+  }, [tasks])
 
   function getColumnTasks(columnId) {
     return tasks.filter((t) => {
